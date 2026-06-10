@@ -21,7 +21,7 @@ export function Gallery() {
 
   return (
     <section id="gallery" className="section" style={{ background:"var(--parchment)" }}>
-      <div className="wc-blob" style={{ width:500,height:500,background:"var(--mint)",top:0,left:"-10%",zIndex:0 }} />
+      <div className="wc-blob" style={{ width:350,height:350,background:"var(--mint)",top:0,left:"-10%",zIndex:0 }} />
 
       <div className="section-inner" style={{ position:"relative" }}>
         <motion.div
