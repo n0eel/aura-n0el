@@ -7,96 +7,106 @@ import mem4 from "../assets/memory-4.jpg";
 import mem5 from "../assets/memory-5.jpg";
 import mem6 from "../assets/memory-6.jpg";
 
-const photos = [
-  { src: mem1, caption: "first night out", rot: -6, x: -40, y: 0 },
-  { src: mem3, caption: "sunday morning", rot: 5, x: 30, y: 40 },
-  { src: mem2, caption: "rain & neon", rot: -3, x: 60, y: -30 },
-  { src: mem5, caption: "midnight drive", rot: 8, x: -50, y: 50 },
-  { src: mem4, caption: "december, ours", rot: -7, x: 20, y: -20 },
-  { src: mem6, caption: "the question", rot: 4, x: -30, y: 30 },
+const PINS = [
+  { src:mem1, caption:"первый раз вместе", rot:-4, color:"var(--rose)" },
+  { src:mem3, caption:"воскресное утро",   rot: 3, color:"var(--sage)" },
+  { src:mem2, caption:"под дождём",        rot:-2, color:"var(--caramel)" },
+  { src:mem5, caption:"поздно ночью",      rot: 5, color:"var(--rose)" },
+  { src:mem4, caption:"наш день",          rot:-3, color:"var(--sage)" },
+  { src:mem6, caption:"навсегда",          rot: 2, color:"var(--caramel)" },
 ];
 
 export function Gallery() {
-  const constraintsRef = useRef<HTMLDivElement>(null);
+  const constrainRef = useRef<HTMLDivElement>(null);
 
   return (
-    <section style={{ position: "relative", overflow: "hidden", padding: "8rem 1.5rem" }}>
-      <div style={{ maxWidth: "80rem", margin: "0 auto" }}>
+    <section className="section" style={{ background:"var(--parchment)" }}>
+      <div className="wc-blob" style={{ width:500,height:500,background:"var(--mint)",top:0,left:"-10%",zIndex:0 }} />
+
+      <div className="section-inner" style={{ position:"relative" }}>
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-20%" }}
-          transition={{ duration: 1.2 }}
-          style={{ textAlign: "center", marginBottom: "5rem" }}
+          initial={{ opacity:0, y:30 }}
+          whileInView={{ opacity:1, y:0 }}
+          viewport={{ once:true, margin:"-20%" }}
+          transition={{ duration:1 }}
+          style={{ textAlign:"center", marginBottom:"1rem" }}
         >
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.5em", color: "var(--primary)" }}>III — Scrapbook</div>
-          <h2 className="gradient-text" style={{ marginTop: "1.5rem", fontFamily: "var(--font-display)", fontSize: "clamp(3rem, 8vw, 7rem)", fontStyle: "italic" }}>
-            Polaroids
+          <div className="label" style={{ marginBottom:"1rem" }}>скрапбук</div>
+          <h2 style={{ fontFamily:"var(--ff-display)", fontStyle:"italic", fontSize:"clamp(2.5rem,7vw,5.5rem)", color:"var(--brown)" }}>
+            Наши моменты
           </h2>
-          <p style={{ marginTop: "1.5rem", maxWidth: "28rem", margin: "1.5rem auto 0", fontSize: "0.875rem", color: "var(--muted-foreground)" }}>
-            Drag them around. They're yours to keep.
-          </p>
         </motion.div>
+        <div className="divider"><div className="divider-icon">✿</div></div>
 
+        {/* Cork board feel */}
         <div
-          ref={constraintsRef}
-          style={{ position: "relative", minHeight: "700px", display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem" }}
+          ref={constrainRef}
+          style={{
+            background:"linear-gradient(135deg,#c8a882,#b8956a)",
+            borderRadius:"1.5rem",
+            padding:"2.5rem 2rem 3rem",
+            boxShadow:"inset 0 2px 10px rgba(0,0,0,0.25), 0 8px 40px rgba(61,35,20,0.2)",
+            position:"relative",
+            minHeight:"560px",
+            overflow:"hidden",
+          }}
         >
-          <style>{`@media(min-width:768px){.pg{grid-template-columns:repeat(3,1fr);gap:1.5rem}}`}</style>
-          <div className="pg" style={{ display: "contents" }}>
-            {photos.map((p, i) => (
-              <motion.div
-                key={i}
-                drag
-                dragMomentum={false}
-                dragElastic={0.15}
-                dragConstraints={constraintsRef}
-                initial={{ opacity: 0, y: 80, rotate: p.rot * 2, scale: 0.9 }}
-                whileInView={{
-                  opacity: 1, y: 0, rotate: p.rot,
-                  x: p.x * 0.3,
-                  transition: { duration: 1.4, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }
-                }}
-                whileHover={{ scale: 1.06, rotate: 0, zIndex: 50, transition: { duration: 0.4 } }}
-                whileDrag={{ scale: 1.1, rotate: 0, zIndex: 100, cursor: "grabbing" }}
-                viewport={{ once: true }}
-                data-hover
-                style={{
-                  position: "relative", cursor: "grab",
-                  background: "oklch(0.95 0.02 320)",
-                  padding: "0.75rem", paddingBottom: "3.5rem",
-                  borderRadius: "2px",
-                  boxShadow: "0 25px 60px -15px oklch(0 0 0 / 0.7), 0 0 0 1px oklch(1 0 0 / 0.05)",
-                  touchAction: "none", userSelect: "none",
-                }}
-              >
-                <div style={{ position: "relative", overflow: "hidden", aspectRatio: "4/5", background: "var(--background)" }}>
-                  <img
-                    src={p.src} alt={p.caption} loading="lazy"
-                    style={{ width: "100%", height: "100%", objectFit: "cover", filter: "saturate(0.85) contrast(1.08)" }}
-                    draggable={false}
-                  />
-                  <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, transparent 40%, oklch(0 0 0 / 0.35))", pointerEvents: "none" }} />
-                </div>
-                <div style={{
-                  position: "absolute", bottom: "0.9rem", left: 0, right: 0,
-                  textAlign: "center", fontFamily: "var(--font-display)", fontSize: "1rem",
-                  fontStyle: "italic", color: "oklch(0.1 0.02 280 / 0.75)",
-                }}>
-                  {p.caption}
-                </div>
+          {/* Cork texture grid */}
+          <div style={{ position:"absolute",inset:0,opacity:0.15,backgroundImage:"radial-gradient(circle at 2px 2px,rgba(0,0,0,0.3) 1px,transparent 0)",backgroundSize:"18px 18px" }} />
 
-                {/* Tape strip decoration */}
-                <div style={{
-                  position: "absolute", top: "-8px", left: "50%", transform: "translateX(-50%)",
-                  width: "60px", height: "18px", borderRadius: "2px",
-                  background: "oklch(0.85 0.1 320 / 0.6)",
-                  backdropFilter: "blur(4px)",
-                }} />
-              </motion.div>
-            ))}
+          {/* Photos — draggable polaroids */}
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:"1.5rem", position:"relative" }}>
+            <style>{`@media(min-width:640px){.cork-grid{grid-template-columns:repeat(3,1fr)!important}}`}</style>
+            <div className="cork-grid" style={{ display:"contents" }}>
+              {PINS.map((p,i) => (
+                <motion.div
+                  key={i}
+                  drag
+                  dragMomentum={false}
+                  dragElastic={0.1}
+                  dragConstraints={constrainRef}
+                  initial={{ opacity:0, scale:0.8, rotate:p.rot * 2 }}
+                  whileInView={{ opacity:1, scale:1, rotate:p.rot, transition:{ duration:0.8, delay:i*0.1, ease:[0.34,1.56,0.64,1] } }}
+                  whileHover={{ scale:1.06, rotate:0, zIndex:20, cursor:"grabbing" }}
+                  whileDrag={{ scale:1.1, rotate:0, zIndex:50 }}
+                  viewport={{ once:true }}
+                  data-hover
+                  style={{
+                    background:"#fff",
+                    padding:"0.7rem 0.7rem 3rem",
+                    cursor:"grab",
+                    boxShadow:"0 4px 16px rgba(0,0,0,0.3)",
+                    userSelect:"none",
+                    touchAction:"none",
+                    position:"relative",
+                  }}
+                >
+                  {/* Push pin */}
+                  <div style={{
+                    position:"absolute", top:"-8px", left:"50%", transform:"translateX(-50%)",
+                    width:14, height:14, borderRadius:"50%",
+                    background:p.color, boxShadow:`0 2px 6px ${p.color}88`,
+                    zIndex:2,
+                  }} />
+
+                  <div style={{ overflow:"hidden", aspectRatio:"1", background:"var(--parchment)" }}>
+                    <img
+                      src={p.src} alt={p.caption} loading="lazy" draggable={false}
+                      style={{ width:"100%", height:"100%", objectFit:"cover", filter:"saturate(0.88) contrast(1.05)" }}
+                    />
+                  </div>
+                  <div style={{ textAlign:"center", marginTop:"0.5rem", fontFamily:"var(--ff-display)", fontStyle:"italic", fontSize:"0.85rem", color:"var(--brown-lt)" }}>
+                    {p.caption}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
+
+        <p style={{ textAlign:"center", marginTop:"1.25rem", fontFamily:"var(--ff-body)", fontStyle:"italic", fontSize:"0.9rem", color:"var(--brown-lt)", opacity:0.7 }}>
+          перетаскивай ✦ они твои
+        </p>
       </div>
     </section>
   );

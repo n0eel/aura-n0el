@@ -1,202 +1,160 @@
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
 
 export function Forever() {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [120, -120]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.88, 1, 1.12]);
-  const [burst, setBurst] = useState(false);
-  const [burstParticles, setBurstParticles] = useState<{ id: number; x: number; y: number; angle: number; size: number; hue: number }[]>([]);
+  const [bloomed, setBloomed] = useState(false);
+  const [flowers, setFlowers] = useState<{id:number;x:number;y:number;emoji:string;size:number}[]>([]);
   const idRef = useRef(0);
 
-  const handleForever = () => {
-    setBurst(true);
-    const particles = Array.from({ length: 40 }, (_, i) => {
+  const bloom = () => {
+    setBloomed(true);
+    const emojis = ["🌸","🌺","🌷","✿","❀","♥","🌼","💮"];
+    const burst = Array.from({length:28}, (_,i) => {
       idRef.current++;
       return {
         id: idRef.current,
-        x: 50,
-        y: 50,
-        angle: (i / 40) * 360,
-        size: 8 + Math.random() * 16,
-        hue: 320 + Math.random() * 60,
+        x: 45 + (Math.random()-0.5)*80,
+        y: 40 + (Math.random()-0.5)*60,
+        emoji: emojis[i%emojis.length],
+        size: 1.2 + Math.random()*1.8,
       };
     });
-    setBurstParticles(particles);
-    setTimeout(() => setBurstParticles([]), 3000);
-    setTimeout(() => setBurst(false), 400);
+    setFlowers(burst);
+    setTimeout(() => setFlowers([]), 3500);
   };
 
   return (
-    <section
-      ref={ref}
-      id="forever"
-      style={{ position: "relative", minHeight: "100vh", overflow: "hidden", padding: "8rem 1.5rem" }}
-    >
-      {/* Falling stars */}
-      <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
-        {Array.from({ length: 40 }).map((_, i) => (
-          <motion.div
-            key={i}
-            style={{
-              position: "absolute",
-              left: `${(i * 17 + 3) % 100}%`,
-              top: "-5%",
-              width: i % 5 === 0 ? "3px" : "2px",
-              height: i % 5 === 0 ? "3px" : "2px",
-              borderRadius: "50%",
-              background: i % 3 === 0 ? "oklch(0.75 0.3 345)" : "oklch(0.95 0.05 320)",
-              boxShadow: "0 0 10px currentColor",
-              color: i % 3 === 0 ? "oklch(0.75 0.3 345)" : "oklch(0.95 0.05 320)",
-            }}
-            animate={{ y: ["0vh", "115vh"], opacity: [0, 1, 1, 0] }}
-            transition={{ duration: 5 + (i % 6), repeat: Infinity, delay: i * 0.35, ease: "linear" }}
-          />
-        ))}
-      </div>
+    <section className="section" style={{ background:"var(--cream)", minHeight:"90vh", display:"flex", alignItems:"center" }}>
+      {/* Big blobs */}
+      <div className="wc-blob" style={{ width:800,height:800,background:"var(--blush)",top:"-25%",left:"-15%",zIndex:0 }} />
+      <div className="wc-blob" style={{ width:600,height:600,background:"var(--mint)",bottom:"-20%",right:"-10%",zIndex:0 }} />
 
-      {/* Heart burst particles */}
-      <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+      {/* Burst flowers */}
+      <div style={{ position:"fixed", inset:0, pointerEvents:"none", zIndex:50, overflow:"hidden" }}>
         <AnimatePresence>
-          {burstParticles.map((p) => (
+          {flowers.map(f => (
             <motion.div
-              key={p.id}
-              initial={{ opacity: 1, scale: 0.5, x: "50vw", y: "50vh" }}
-              animate={{
-                opacity: 0, scale: 0,
-                x: `calc(50vw + ${Math.cos(p.angle * Math.PI / 180) * (80 + Math.random() * 120)}px)`,
-                y: `calc(50vh + ${Math.sin(p.angle * Math.PI / 180) * (80 + Math.random() * 120)}px)`,
-              }}
+              key={f.id}
+              initial={{ opacity:1, scale:0, left:`${f.x}vw`, top:`${f.y}vh` }}
+              animate={{ opacity:0, scale:f.size, y:-120 }}
               exit={{}}
-              transition={{ duration: 1.5 + Math.random() * 1, ease: "easeOut" }}
-              style={{ position: "absolute", left: 0, top: 0, fontSize: `${p.size}px`, color: `oklch(0.75 0.3 ${p.hue})` }}
+              transition={{ duration:2+Math.random(), ease:"easeOut" }}
+              style={{ position:"fixed", fontSize:`${f.size*1.4}rem`, pointerEvents:"none" }}
             >
-              ♥
+              {f.emoji}
             </motion.div>
           ))}
         </AnimatePresence>
       </div>
 
-      {/* Radial gradient that pulses */}
-      <motion.div
-        animate={{ opacity: burst ? 0.6 : 0.15, scale: burst ? 1.3 : 1 }}
-        transition={{ duration: 0.4 }}
-        style={{
-          position: "absolute", inset: 0, pointerEvents: "none",
-          background: "radial-gradient(ellipse at center, oklch(0.72 0.28 340 / 0.4), transparent 60%)",
-        }}
-      />
-
-      <motion.div
-        style={{ y, scale, position: "relative", zIndex: 10, maxWidth: "64rem", margin: "0 auto", minHeight: "80vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 1.5rem" }}
-      >
+      <div className="section-inner" style={{ position:"relative", textAlign:"center", zIndex:1, maxWidth:"56rem" }}>
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 2.5 }}
-          style={{ fontFamily: "var(--font-mono)", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.5em", color: "var(--primary)" }}
+          initial={{ opacity:0 }}
+          whileInView={{ opacity:1 }}
+          viewport={{ once:true }}
+          transition={{ duration:2 }}
         >
-          VIII — The End is Just a Door
+          <div className="label" style={{ marginBottom:"1.5rem" }}>и навсегда</div>
         </motion.div>
 
-        {/* Big heart */}
+        {/* Animated flower crown */}
         <motion.div
-          initial={{ opacity: 0, scale: 0 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.5, delay: 0.3, ease: [0.34, 1.56, 0.64, 1] }}
-          style={{ fontSize: "5rem", marginTop: "2rem", lineHeight: 1 }}
-          className="animate-heartbeat"
+          initial={{ opacity:0, scale:0, rotate:-20 }}
+          whileInView={{ opacity:1, scale:1, rotate:0 }}
+          viewport={{ once:true }}
+          transition={{ duration:1.5, ease:[0.34,1.56,0.64,1], delay:0.2 }}
+          style={{ fontSize:"4.5rem", lineHeight:1, marginBottom:"2rem" }}
+          className="anim-heartbeat"
         >
-          ♥
+          🌸
         </motion.div>
 
         <motion.h2
-          initial={{ opacity: 0, y: 80, filter: "blur(30px)" }}
-          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          viewport={{ once: true, margin: "-20%" }}
-          transition={{ duration: 2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          style={{ marginTop: "2.5rem", fontFamily: "var(--font-display)", fontSize: "clamp(3rem, 9vw, 9rem)", fontStyle: "italic", lineHeight: 1 }}
-        >
-          <span className="gradient-text">If the stars went out</span>
-          <br />
-          <motion.span
-            className="text-glow-soft"
-            style={{ color: "var(--foreground)", display: "inline-block" }}
-            animate={{ textShadow: ["0 0 20px oklch(0.95 0.05 320 / 0.2)", "0 0 60px oklch(0.95 0.05 320 / 0.6)", "0 0 20px oklch(0.95 0.05 320 / 0.2)"] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          >
-            I'd still find you.
-          </motion.span>
-        </motion.h2>
-
-        {/* The Forever button */}
-        <motion.button
-          initial={{ opacity: 0, scale: 0.7, filter: "blur(20px)" }}
-          whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.6, delay: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
-          whileHover={{ scale: 1.06 }}
-          whileTap={{ scale: 0.93 }}
-          onClick={handleForever}
-          data-hover
-          className="animate-pulse-glow"
+          initial={{ opacity:0, y:60 }}
+          whileInView={{ opacity:1, y:0 }}
+          viewport={{ once:true, margin:"-20%" }}
+          transition={{ duration:1.8, ease:[0.16,1,0.3,1], delay:0.3 }}
           style={{
-            marginTop: "4rem",
-            padding: "2rem 4rem", borderRadius: "9999px",
-            background: "var(--gradient-neon)",
-            boxShadow: "0 0 60px oklch(0.72 0.28 340 / 0.6), 0 0 120px oklch(0.55 0.25 305 / 0.4)",
-            border: "none", cursor: "none",
-            color: "var(--foreground)",
-            fontFamily: "var(--font-display)", fontSize: "clamp(2rem, 5vw, 4rem)",
-            fontStyle: "italic", letterSpacing: "0.05em",
-            position: "relative", overflow: "hidden",
+            fontFamily:"var(--ff-display)", fontStyle:"italic",
+            fontSize:"clamp(3rem,9vw,8rem)", color:"var(--brown)",
+            lineHeight:1.0, letterSpacing:"-0.03em",
           }}
         >
-          <motion.span
-            animate={burst ? { scale: [1, 0.9, 1.05, 1] } : {}}
-            transition={{ duration: 0.4 }}
+          Ты —{" "}
+          <span style={{ color:"var(--rose-deep)" }}>лучшее,</span>
+          <br />
+          что со мной
+          <br />
+          случилось.
+        </motion.h2>
+
+        {/* Bloom button */}
+        <motion.div
+          initial={{ opacity:0, y:30 }}
+          whileInView={{ opacity:1, y:0 }}
+          viewport={{ once:true }}
+          transition={{ duration:1.2, delay:0.8, ease:[0.34,1.56,0.64,1] }}
+          style={{ marginTop:"3.5rem" }}
+        >
+          <motion.button
+            onClick={bloom}
+            data-hover
+            whileHover={{ scale:1.06 }}
+            whileTap={{ scale:0.93 }}
+            animate={bloomed ? { scale:[1,0.9,1.05,1] } : {}}
+            transition={{ duration:0.4 }}
+            className="btn-cute"
+            style={{
+              fontSize:"clamp(1.2rem,3vw,1.8rem)",
+              padding:"1.25rem 3.5rem",
+              background:`linear-gradient(135deg, var(--rose), var(--caramel))`,
+              boxShadow:"0 8px 40px rgba(232,165,152,0.55)",
+            }}
           >
-            Forever
-          </motion.span>
-          <motion.div
-            style={{ position: "absolute", inset: 0, background: "oklch(1 0 0 / 0)", borderRadius: "9999px" }}
-            animate={burst ? { background: ["oklch(1 0 0 / 0)", "oklch(1 0 0 / 0.15)", "oklch(1 0 0 / 0)"] } : {}}
-            transition={{ duration: 0.4 }}
-          />
-        </motion.button>
+            <span>♥</span>
+            <span>навсегда</span>
+            <span>♥</span>
+          </motion.button>
+        </motion.div>
 
         <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 2.5, delay: 1.4 }}
-          style={{ marginTop: "4rem", maxWidth: "28rem", fontFamily: "var(--font-display)", fontSize: "1.125rem", fontStyle: "italic", color: "var(--muted-foreground)", textAlign: "center", lineHeight: 1.7 }}
+          initial={{ opacity:0 }}
+          whileInView={{ opacity:1 }}
+          viewport={{ once:true }}
+          transition={{ duration:2, delay:1.4 }}
+          style={{
+            marginTop:"3rem",
+            fontFamily:"var(--ff-body)", fontStyle:"italic",
+            color:"var(--brown-lt)", fontSize:"1.05rem", lineHeight:1.8,
+            maxWidth:"28rem", margin:"3rem auto 0",
+          }}
         >
-          — Yours, in every timeline.<br />
-          In every universe that ever was.
+          — твой, полностью и навсегда.
+          <br />
+          В каждой версии этой жизни.
         </motion.p>
 
-        {/* Orbiting hearts */}
-        <div style={{ position: "relative", width: "300px", height: "100px", marginTop: "3rem" }}>
-          {[0, 1, 2, 3, 4].map((i) => (
-            <motion.div
+        {/* Decorative flowers row */}
+        <motion.div
+          initial={{ opacity:0 }}
+          whileInView={{ opacity:1 }}
+          viewport={{ once:true }}
+          transition={{ duration:1.5, delay:1 }}
+          style={{ marginTop:"3.5rem", display:"flex", justifyContent:"center", gap:"1rem", fontSize:"1.8rem", opacity:0.55 }}
+        >
+          {["🌸","✿","♥","❀","🌷","♥","✿","🌸"].map((e,i) => (
+            <motion.span
               key={i}
-              style={{ position: "absolute", left: "50%", top: "50%", color: `oklch(0.72 0.28 340 / ${0.3 + i * 0.1})`, fontSize: `${0.7 + i * 0.1}rem` }}
-              animate={{ rotate: 360 }}
-              transition={{ duration: 8 + i * 2, repeat: Infinity, ease: "linear" }}
-            >
-              <div style={{ transform: `translateX(${50 + i * 20}px)` }}>♥</div>
-            </motion.div>
+              animate={{ y:[0,-(4+i%3*3),0], rotate:[0,i%2===0?8:-8,0] }}
+              transition={{ duration:2.5+i*0.3, repeat:Infinity, delay:i*0.2 }}
+            >{e}</motion.span>
           ))}
-        </div>
+        </motion.div>
 
-        <div style={{ marginTop: "4rem", fontFamily: "var(--font-mono)", fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.5em", color: "oklch(0.72 0.04 300 / 0.4)" }}>
-          made with love · 2026 · ♥
+        <div style={{ marginTop:"4rem", fontFamily:"var(--ff-mono)", fontSize:"9px", textTransform:"uppercase", letterSpacing:"0.5em", color:"var(--brown-lt)", opacity:0.4 }}>
+          сделано с любовью · 2026
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }

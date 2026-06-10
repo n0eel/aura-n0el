@@ -1,194 +1,150 @@
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
-import { useRef, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import heroImg from "../assets/hero-couple.jpg";
 
+const SVG_HEART = (
+  <svg viewBox="0 0 100 90" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width:"100%",height:"100%" }}>
+    <motion.path
+      d="M50 80 C50 80 5 52 5 28 C5 12 17 4 30 4 C39 4 46 9 50 15 C54 9 61 4 70 4 C83 4 95 12 95 28 C95 52 50 80 50 80Z"
+      stroke="var(--rose)" strokeWidth="2.5" fill="none"
+      initial={{ pathLength: 0 }}
+      animate={{ pathLength: 1 }}
+      transition={{ duration: 2.2, ease: "easeInOut", delay: 1.2 }}
+    />
+  </svg>
+);
+
 export function Hero() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [0, 220]);
-  const opacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.18]);
-  const textY = useTransform(scrollYProgress, [0, 1], [0, -120]);
-
-  // 3D tilt on hero text
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const rotX = useSpring(useTransform(my, [-0.5, 0.5], [8, -8]), { stiffness: 200, damping: 30 });
-  const rotY = useSpring(useTransform(mx, [-0.5, 0.5], [-8, 8]), { stiffness: 200, damping: 30 });
-
-  const [btnHover, setBtnHover] = useState(false);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    mx.set((e.clientX - rect.left) / rect.width - 0.5);
-    my.set((e.clientY - rect.top) / rect.height - 0.5);
-  };
-  const handleMouseLeave = () => { mx.set(0); my.set(0); };
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start","end start"] });
+  const imgY   = useTransform(scrollYProgress, [0,1], [0, 160]);
+  const textY  = useTransform(scrollYProgress, [0,1], [0, -80]);
+  const opac   = useTransform(scrollYProgress, [0,0.7], [1, 0]);
 
   return (
-    <section
-      ref={ref}
-      style={{ position: "relative", height: "100vh", width: "100%", overflow: "hidden" }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-    >
-      {/* Parallax image */}
-      <motion.div style={{ scale, y, position: "absolute", inset: 0 }}>
+    <section ref={ref} style={{ position:"relative", minHeight:"100vh", overflow:"hidden", display:"flex", alignItems:"center" }}>
+
+      {/* Blobs */}
+      <div className="wc-blob" style={{ width:700,height:700,background:"var(--blush)",top:"-20%",right:"-10%",zIndex:0 }} />
+      <div className="wc-blob" style={{ width:500,height:500,background:"var(--mint)",bottom:"-10%",left:"-5%",zIndex:0 }} />
+
+      {/* Photo — right side, parallax */}
+      <motion.div
+        style={{ y: imgY, position:"absolute", right:0, top:0, bottom:0, width:"55%", zIndex:1 }}
+      >
         <img
           src={heroImg}
-          alt="Two souls beneath a violet sky"
-          style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.55 }}
+          alt=""
+          style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center top" }}
         />
+        {/* Fade left edge into cream */}
         <div style={{
-          position: "absolute", inset: 0,
-          background: "linear-gradient(180deg, oklch(0.04 0.015 280 / 0.3) 0%, oklch(0.04 0.015 280 / 0.55) 55%, var(--background) 100%)",
+          position:"absolute",inset:0,
+          background:"linear-gradient(90deg, var(--cream) 0%, transparent 35%, transparent 80%, var(--cream) 100%)",
+        }} />
+        <div style={{
+          position:"absolute",inset:0,
+          background:"linear-gradient(180deg, var(--cream) 0%, transparent 12%, transparent 85%, var(--cream) 100%)",
         }} />
       </motion.div>
 
-      {/* Animated gradient orbs */}
-      {[
-        { color: "oklch(0.45 0.3 340 / 0.3)", size: 600, x: "10%", y: "20%", dur: 12 },
-        { color: "oklch(0.35 0.25 295 / 0.25)", size: 500, x: "70%", y: "60%", dur: 16 },
-        { color: "oklch(0.4 0.28 310 / 0.2)", size: 400, x: "50%", y: "10%", dur: 10 },
-      ].map((orb, i) => (
-        <motion.div
-          key={i}
-          style={{
-            position: "absolute", borderRadius: "50%", pointerEvents: "none",
-            width: orb.size, height: orb.size,
-            left: orb.x, top: orb.y,
-            background: `radial-gradient(circle, ${orb.color}, transparent 70%)`,
-            filter: "blur(40px)",
-            transform: "translate(-50%, -50%)",
-          }}
-          animate={{ scale: [1, 1.2, 0.9, 1], x: [0, 30, -20, 0], y: [0, -20, 15, 0] }}
-          transition={{ duration: orb.dur, repeat: Infinity, ease: "easeInOut" }}
-        />
-      ))}
-
-      {/* Floating orbs / dots */}
-      {Array.from({ length: 16 }).map((_, i) => (
-        <motion.div
-          key={i}
-          style={{
-            position: "absolute", pointerEvents: "none",
-            width: i % 3 === 0 ? 10 : 6, height: i % 3 === 0 ? 10 : 6,
-            borderRadius: "50%",
-            left: `${(i * 53 + 7) % 100}%`,
-            top: `${(i * 37 + 13) % 100}%`,
-            background: i % 3 === 0 ? "oklch(0.75 0.3 345)" : "oklch(0.95 0.05 320)",
-            boxShadow: "0 0 20px currentColor",
-            color: i % 3 === 0 ? "oklch(0.75 0.3 345)" : "oklch(0.95 0.05 320)",
-          }}
-          animate={{ y: [0, -40, -10, 0], opacity: [0.25, 0.95, 0.6, 0.25], scale: [1, 1.5, 1.1, 1] }}
-          transition={{ duration: 6 + (i % 4), repeat: Infinity, delay: i * 0.35, ease: "easeInOut" }}
-        />
-      ))}
-
-      {/* Main content with 3D tilt */}
+      {/* Text — left side */}
       <motion.div
-        style={{ opacity, y: textY, rotateX: rotX, rotateY: rotY, transformPerspective: 1200 }}
-        className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center"
+        style={{ y: textY, opacity: opac, position:"relative", zIndex:3, padding:"2rem 1.5rem", maxWidth:"54rem", margin:"0 auto", width:"100%" }}
       >
         <motion.div
-          initial={{ opacity: 0, letterSpacing: "0.8em" }}
-          animate={{ opacity: 1, letterSpacing: "0.4em" }}
-          transition={{ duration: 2.5, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          style={{ fontFamily: "var(--font-mono)", fontSize: "10px", textTransform: "uppercase", color: "var(--primary)", letterSpacing: "0.4em" }}
+          initial={{ opacity:0, x:-30 }}
+          animate={{ opacity:1, x:0 }}
+          transition={{ duration:1, delay:0.2 }}
+          className="label"
+          style={{ marginBottom:"1.5rem" }}
         >
-          Chapter One — A Love Story
-        </motion.div>
-
-        {/* Animated SVG heart above title */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
-          style={{ marginTop: "1.5rem", fontSize: "2.5rem", lineHeight: 1 }}
-          className="animate-heartbeat"
-        >
-          ♥
+          ✦ &nbsp; моё всё
         </motion.div>
 
         <motion.h1
-          initial={{ opacity: 0, y: 80, filter: "blur(30px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 1.8, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          style={{ marginTop: "1.5rem", fontFamily: "var(--font-display)", fontSize: "clamp(3rem, 9vw, 8rem)", lineHeight: 0.95, letterSpacing: "-0.02em" }}
-          className="text-glow-soft"
+          initial={{ opacity:0, y:40 }}
+          animate={{ opacity:1, y:0 }}
+          transition={{ duration:1.4, delay:0.4, ease:[0.16,1,0.3,1] }}
+          style={{
+            fontFamily:"var(--ff-display)", fontStyle:"italic",
+            fontSize:"clamp(3.2rem,8vw,7.5rem)", lineHeight:1.05,
+            color:"var(--brown)", letterSpacing:"-0.03em",
+            maxWidth:"12ch",
+          }}
         >
-          <span className="gradient-text" style={{ fontStyle: "italic" }}>In every universe,</span>
-          <br />
-          <motion.span
-            style={{ color: "var(--foreground)", display: "inline-block" }}
-            animate={{ textShadow: ["0 0 0px transparent", "0 0 40px oklch(0.72 0.28 340 / 0.5)", "0 0 0px transparent"] }}
-            transition={{ duration: 4, repeat: Infinity, delay: 2 }}
-          >
-            I'd find you.
-          </motion.span>
+          ты —&nbsp;моё
+          <br/>
+          <span style={{ color:"var(--rose-deep)" }}>любимое</span>
+          <br/>
+          место
         </motion.h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.4, delay: 1.3 }}
-          style={{ marginTop: "2rem", maxWidth: "38rem", fontSize: "clamp(0.875rem, 2vw, 1.05rem)", lineHeight: 1.75, color: "var(--muted-foreground)" }}
+        {/* Animated heart outline */}
+        <motion.div
+          initial={{ opacity:0 }}
+          animate={{ opacity:1 }}
+          transition={{ delay:0.9 }}
+          style={{ width:72, height:65, margin:"1.5rem 0" }}
         >
-          A love letter written in starlight — every memory, every moment, every quiet
-          evening folded into something we'll carry forever.
+          {SVG_HEART}
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity:0, y:20 }}
+          animate={{ opacity:1, y:0 }}
+          transition={{ duration:1.2, delay:1.4 }}
+          style={{
+            fontFamily:"var(--ff-body)", fontStyle:"italic",
+            fontSize:"clamp(1rem,2vw,1.2rem)", lineHeight:1.8,
+            color:"var(--brown-lt)", maxWidth:"28rem",
+            marginBottom:"2.5rem",
+          }}
+        >
+          Этот сайт — для тебя. Собран из воспоминаний,&nbsp;тепла
+          и&nbsp;всего, что я хочу тебе сказать.
         </motion.p>
 
-        {/* Magnetic CTA button */}
         <motion.a
           href="#timeline"
-          initial={{ opacity: 0, scale: 0.85 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, delay: 1.8, ease: [0.34, 1.56, 0.64, 1] }}
-          whileHover={{ scale: 1.07 }}
-          whileTap={{ scale: 0.95 }}
-          onHoverStart={() => setBtnHover(true)}
-          onHoverEnd={() => setBtnHover(false)}
           data-hover
-          style={{
-            marginTop: "3.5rem",
-            display: "inline-flex", alignItems: "center", gap: "0.75rem",
-            padding: "1.1rem 2.5rem", borderRadius: "9999px",
-            border: "1px solid oklch(0.72 0.28 340 / 0.4)",
-            background: "oklch(0.04 0.015 280 / 0.4)",
-            backdropFilter: "blur(20px)",
-            fontFamily: "var(--font-display)", fontSize: "1.1rem", fontStyle: "italic",
-            color: "var(--foreground)", textDecoration: "none",
-            position: "relative", overflow: "hidden",
-          }}
-          className="animate-pulse-glow"
+          initial={{ opacity:0, scale:0.85 }}
+          animate={{ opacity:1, scale:1 }}
+          transition={{ duration:1, delay:1.8, ease:[0.34,1.56,0.64,1] }}
+          className="btn-cute"
+          style={{ textDecoration:"none" }}
         >
-          <motion.div
-            style={{
-              position: "absolute", inset: 0, borderRadius: "9999px",
-              background: "var(--gradient-neon)", opacity: 0,
-            }}
-            animate={{ opacity: btnHover ? 0.15 : 0 }}
-            transition={{ duration: 0.4 }}
-          />
-          <span style={{ position: "relative" }}>Our Story</span>
-          <motion.span
-            animate={{ x: btnHover ? 4 : 0, rotate: btnHover ? 10 : 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            ↓
-          </motion.span>
+          <span>наша история</span>
+          <span>↓</span>
         </motion.a>
       </motion.div>
 
       {/* Scroll hint */}
       <motion.div
-        style={{ position: "absolute", bottom: "2rem", left: "50%", translateX: "-50%", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}
-        animate={{ y: [0, 12, 0], opacity: [0.4, 1, 0.4] }}
-        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+        style={{ position:"absolute", bottom:"2rem", left:"50%", translateX:"-50%", zIndex:5 }}
+        animate={{ y:[0,10,0] }}
+        transition={{ duration:2, repeat:Infinity }}
       >
-        <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.4em", color: "var(--muted-foreground)" }}>scroll</div>
-        <div style={{ width: "1px", height: "3rem", background: "linear-gradient(180deg, transparent, var(--primary), oklch(0.55 0.25 305 / 0.3), transparent)" }} />
+        <div style={{
+          width:26, height:42, borderRadius:13,
+          border:"1.5px solid var(--caramel)",
+          display:"flex", alignItems:"flex-start", justifyContent:"center",
+          paddingTop:6,
+        }}>
+          <motion.div
+            style={{ width:4, height:8, borderRadius:9999, background:"var(--caramel)" }}
+            animate={{ y:[0,12,0], opacity:[1,0.2,1] }}
+            transition={{ duration:1.8, repeat:Infinity }}
+          />
+        </div>
       </motion.div>
+
+      {/* Corner decorations */}
+      {["top:1.5rem;left:1.5rem","top:1.5rem;right:1.5rem","bottom:1.5rem;left:1.5rem","bottom:1.5rem;right:1.5rem"].map((pos,i) => (
+        <div key={i} style={{ position:"absolute", ...(Object.fromEntries(pos.split(";").map(s=>s.split(":")))), zIndex:4, color:"var(--sage)", fontSize:"1.4rem", opacity:0.5, pointerEvents:"none" }}>
+          ❀
+        </div>
+      ))}
     </section>
   );
 }
