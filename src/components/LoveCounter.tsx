@@ -62,7 +62,7 @@ export function LoveCounter() {
   }, []);
 
   return (
-    <section className="section" style={{ background:"var(--parchment)" }}>
+    <section id="counter" className="section" style={{ background:"var(--parchment)" }}>
       <div className="wc-blob" style={{ width:400,height:400,background:"var(--blush)",top:"5%",left:"-8%",zIndex:0 }} />
 
       <div className="section-inner" style={{ position:"relative", textAlign:"center", maxWidth:"60rem" }}>

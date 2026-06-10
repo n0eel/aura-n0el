@@ -36,7 +36,7 @@ export function Reasons() {
   };
 
   return (
-    <section className="section" style={{ background:"var(--cream)" }}>
+    <section id="reasons" className="section" style={{ background:"var(--cream)" }}>
       <div className="wc-blob" style={{ width:500,height:500,background:"var(--mint)",top:"10%",right:"-10%",zIndex:0 }} />
 
       <div className="section-inner" style={{ position:"relative", maxWidth:"60rem" }}>

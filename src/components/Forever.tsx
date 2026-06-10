@@ -24,7 +24,7 @@ export function Forever() {
   };
 
   return (
-    <section className="section" style={{ background:"var(--cream)", minHeight:"90vh", display:"flex", alignItems:"center" }}>
+    <section id="forever" className="section" style={{ background:"var(--cream)", minHeight:"90vh", display:"flex", alignItems:"center" }}>
       {/* Big blobs */}
       <div className="wc-blob" style={{ width:800,height:800,background:"var(--blush)",top:"-25%",left:"-15%",zIndex:0 }} />
       <div className="wc-blob" style={{ width:600,height:600,background:"var(--mint)",bottom:"-20%",right:"-10%",zIndex:0 }} />

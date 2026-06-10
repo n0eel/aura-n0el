@@ -50,7 +50,7 @@ export function Letters() {
   const [open, setOpen] = useState<number|null>(null);
 
   return (
-    <section className="section" style={{ background:"var(--parchment)" }}>
+    <section id="letters" className="section" style={{ background:"var(--parchment)" }}>
       <div className="wc-blob" style={{ width:450,height:450,background:"var(--blush)",bottom:0,left:"-5%",zIndex:0 }} />
 
       <div className="section-inner" style={{ position:"relative", maxWidth:"60rem" }}>

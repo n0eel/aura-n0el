@@ -160,3 +160,27 @@ body::before {
 
 .anim-fade-up  { animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) both; }
 .anim-heartbeat { animation: heartbeat 1.5s ease-in-out infinite; }
+
+/* Section wave dividers */
+.wave-divider { line-height: 0; overflow: hidden; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--cream); }
+::-webkit-scrollbar-thumb { background: var(--rose); border-radius: 9999px; }
+
+/* Link reset */
+a { color: inherit; }
+
+/* Smooth section transitions */
+section, [id] { scroll-margin-top: 80px; }
+
+/* Responsive text wrap */
+h1,h2,h3,p { text-wrap: balance; }
+
+/* Focus visible */
+button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--rose);
+  outline-offset: 3px;
+  border-radius: 4px;
+}

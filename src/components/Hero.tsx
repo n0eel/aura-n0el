@@ -22,7 +22,7 @@ export function Hero() {
   const opac   = useTransform(scrollYProgress, [0,0.7], [1, 0]);
 
   return (
-    <section ref={ref} style={{ position:"relative", minHeight:"100vh", overflow:"hidden", display:"flex", alignItems:"center" }}>
+    <section id="hero" ref={ref} style={{ position:"relative", minHeight:"100vh", overflow:"hidden", display:"flex", alignItems:"center" }}>
 
       {/* Blobs */}
       <div className="wc-blob" style={{ width:700,height:700,background:"var(--blush)",top:"-20%",right:"-10%",zIndex:0 }} />

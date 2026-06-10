@@ -37,7 +37,7 @@ export function MusicPlayer() {
   const pct = dur ? (time/dur)*100 : 0;
 
   return (
-    <section className="section" style={{ background:"var(--cream)" }}>
+    <section id="music" className="section" style={{ background:"var(--cream)" }}>
       <div className="wc-blob" style={{ width:450,height:450,background:"var(--blush)",bottom:0,right:"5%",zIndex:0 }} />
 
       <div className="section-inner" style={{ position:"relative", maxWidth:"56rem" }}>
