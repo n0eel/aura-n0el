@@ -24,7 +24,10 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npm run build
+      - name: Build with GH Pages base
+        run: VITE_BASE=/aura-n0el/ npm run build
+        env:
+          VITE_BASE: /aura-n0el/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

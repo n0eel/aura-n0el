@@ -89,8 +89,7 @@ export function Forever() {
       />
 
       <motion.div
-        style={{ y, scale }}
-        className="relative z-10 mx-auto flex min-h-[80vh] max-w-5xl flex-col items-center justify-center text-center"
+        style={{ y, scale, position: "relative", zIndex: 10, maxWidth: "64rem", margin: "0 auto", minHeight: "80vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 1.5rem" }}
       >
         <motion.div
           initial={{ opacity: 0 }}
