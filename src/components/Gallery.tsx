@@ -9,7 +9,7 @@ import mem6 from "../assets/memory-6.jpg";
 
 const PINS = [
   { src:mem1, caption:"первый раз вместе", rot:-4, color:"var(--rose)" },
-  { src:mem3, caption:"воскресное утро",   rot: 3, color:"var(--sage)" },
+  { src:mem3, caption:"в киношке",   rot: 3, color:"var(--sage)" },
   { src:mem2, caption:"под дождём",        rot:-2, color:"var(--caramel)" },
   { src:mem5, caption:"поздно ночью",      rot: 5, color:"var(--rose)" },
   { src:mem4, caption:"наш день",          rot:-3, color:"var(--sage)" },
